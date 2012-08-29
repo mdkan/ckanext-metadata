@@ -35,6 +35,9 @@ class MetadataHarvester(HarvesterBase):
             client.identify()
         except XMLSyntaxError:
             self.harvester = DDIHarvester()
+        except urllib2.URLError:
+            self._save_gather_error('Could not identify source!', harvest_job)
+            return None
         if not self.harvester:
             self.harvester = OAIPMHHarvester()
         return self.harvester.gather_stage(harvest_job)

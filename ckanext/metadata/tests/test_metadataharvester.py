@@ -50,6 +50,17 @@ class TestUniversalHarvester(unittest.TestCase, FunctionalTestCase):
         self.assert_(harv)
         self.assert_(isinstance(harv.info(), dict))
 
+    def test_0harvester_url_error(self):
+        self.harv = MetadataHarvester()
+        self.harv.config = "{}"
+        harvest_job = HarvestJob()
+        harvest_job.source = HarvestSource()
+        harvest_job.source.title = "Test"
+        harvest_job.source.url = "http://foo"
+        harvest_job.source.type = "Metadata"
+        urllib2.urlopen = realopen
+        self.assert_(self.harv.gather_stage(harvest_job) == None)
+
     def _side_effect_ddi_datas(self, foo):
         if self.num_side_effect == 1:
             self.num_side_effect = 2
