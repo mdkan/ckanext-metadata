@@ -20,12 +20,21 @@ setup(
 	include_package_data=True,
 	zip_safe=False,
 	install_requires=[
-		# -*- Extra requirements: -*-
+		'ckanext-oaipmh',
+		'ckanext-ddi',
+	],
+	setup_requires=[
+		'nose>=1.0',
+		'coverage'
+	],
+	tests_require=[
+		'nose',
+		'mock',
 	],
 	entry_points=\
 	"""
         [ckan.plugins]
 	# Add plugins here, eg
-	# myplugin=ckanext.metadata:PluginClass
+	metadata_harvester=ckanext.metadata.harvester:MetadataHarvester
 	""",
 )
