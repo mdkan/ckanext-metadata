@@ -1,8 +1,11 @@
 '''Harvester module for the universal metadata harvester of CKAN.
 '''
 import urllib2
+import json
+import pickle
 
 from ckanext.harvest.harvesters.base import HarvesterBase
+from ckanext.harvest.model import HarvestObject
 from ckanext.oaipmh.harvester import OAIPMHHarvester
 from ckanext.ddi.harvester import DDIHarvester
 
@@ -40,10 +43,30 @@ class MetadataHarvester(HarvesterBase):
             return None
         if not self.harvester:
             self.harvester = OAIPMHHarvester()
-        return self.harvester.gather_stage(harvest_job)
+        objs = self.harvester.gather_stage(harvest_job)
+        ret = []
+        for obj in objs:
+            obj = HarvestObject.get(obj)
+            cont = obj.content
+            dict = json.loads(cont)
+            dict['harv'] = pickle.dumps(self.harvester)
+            obj.content = json.dumps(dict)
+            obj.save()
+            ret.append(obj.id)
+        return ret
 
     def fetch_stage(self, harvest_object):
-        return self.harvester.fetch_stage(harvest_object)
+        harv = pickle.loads(json.loads(harvest_object.content)['harv'])
+        self.harvester = harv
+        bool = self.harvester.fetch_stage(harvest_object)
+        cont = harvest_object.content
+        dict = json.loads(cont)
+        dict['harv'] = pickle.dumps(self.harvester)
+        harvest_object.content = json.dumps(dict)
+        harvest_object.save()
+        return bool
 
     def import_stage(self, harvest_object):
+        harv = pickle.loads(json.loads(harvest_object.content)['harv'])
+        self.harvester = harv
         return self.harvester.import_stage(harvest_object)
