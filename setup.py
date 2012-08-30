@@ -22,6 +22,7 @@ setup(
 	install_requires=[
 		'ckanext-oaipmh',
 		'ckanext-ddi',
+		'jsonpickle',
 	],
 	setup_requires=[
 		'nose>=1.0',

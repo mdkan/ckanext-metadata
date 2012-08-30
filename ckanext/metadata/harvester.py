@@ -2,7 +2,7 @@
 '''
 import urllib2
 import json
-import pickle
+import jsonpickle
 
 from ckanext.harvest.harvesters.base import HarvesterBase
 from ckanext.harvest.model import HarvestObject
@@ -49,24 +49,24 @@ class MetadataHarvester(HarvesterBase):
             obj = HarvestObject.get(obj)
             cont = obj.content
             dict = json.loads(cont)
-            dict['harv'] = pickle.dumps(self.harvester)
+            dict['harv'] = jsonpickle.encode(self.harvester)
             obj.content = json.dumps(dict)
             obj.save()
             ret.append(obj.id)
         return ret
 
     def fetch_stage(self, harvest_object):
-        harv = pickle.loads(json.loads(harvest_object.content)['harv'])
+        harv = jsonpickle.decode(json.loads(harvest_object.content)['harv'])
         self.harvester = harv
         bool = self.harvester.fetch_stage(harvest_object)
         cont = harvest_object.content
         dict = json.loads(cont)
-        dict['harv'] = pickle.dumps(self.harvester)
+        dict['harv'] = jsonpickle.encode(self.harvester)
         harvest_object.content = json.dumps(dict)
         harvest_object.save()
         return bool
 
     def import_stage(self, harvest_object):
-        harv = pickle.loads(json.loads(harvest_object.content)['harv'])
+        harv = jsonpickle.decode(json.loads(harvest_object.content)['harv'])
         self.harvester = harv
         return self.harvester.import_stage(harvest_object)
