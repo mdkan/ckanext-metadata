@@ -4,14 +4,15 @@ import urllib2
 import json
 import jsonpickle
 
+
 from ckanext.harvest.harvesters.base import HarvesterBase
 from ckanext.harvest.model import HarvestObject
 from ckanext.oaipmh.harvester import OAIPMHHarvester
 from ckanext.ddi.harvester import DDIHarvester
 
-import oaipmh
 from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from oaipmh.error import XMLSyntaxError
+import oaipmh.client
 
 
 class MetadataHarvester(HarvesterBase):
